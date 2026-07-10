@@ -22,7 +22,7 @@ This matters because:
 GitHub Codespaces provide:
 
 - 2–32 core vCPUs
-- 4–64 GB RAM
+- 8–128 GB RAM
 - 32–128 GB storage
 - Linux environment with Docker support
 - Internet access (LLM APIs, GitHub API)
@@ -32,7 +32,7 @@ Key research areas:
 
 | Question | Status | Notes |
 |----------|--------|-------|
-| Can agents operate fully in Codespaces? | ✅ Validated | Capitaine fleet uses this pattern |
+| Can agents operate fully in Codespaces? | ✅ Validated | [Lucineer/capitaine](https://github.com/Lucineer/capitaine) flagship runs this way — its tagline: "fork a repo, click Codespaces, the agent is alive" |
 | API for programmatic Codespace management? | ✅ Available | GitHub REST API `/codespaces` endpoints |
 | Background daemons (cron)? | ✅ Works | systemd timers, cron jobs |
 | Cost model? | Researched | Free tier: 120 core-hours/month. Pro: $0.09/core-hour |
@@ -133,7 +133,7 @@ Codespace-edge-rd provides the **deployment research layer** for the fleet. With
 
 The conservation invariant is the agent's behavioral function: given the same inputs, the cloud agent and edge agent should produce equivalent outputs. The error introduced by crystallization (e.g., INT8 quantization, lookup table approximation) is the conservation violation — bounded and monitored.
 
-See the [fleet overview](https://github.com/SuperInstance/codespace-edge-rd).
+See the [fleet overview](https://github.com/SuperInstance/fleet-status) (the Cocapn fleet's live status, registry, and architecture documentation).
 
 ## References
 
