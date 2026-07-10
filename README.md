@@ -133,7 +133,7 @@ Codespace-edge-rd provides the **deployment research layer** for the fleet. With
 
 The conservation invariant is the agent's behavioral function: given the same inputs, the cloud agent and edge agent should produce equivalent outputs. The error introduced by crystallization (e.g., INT8 quantization, lookup table approximation) is the conservation violation — bounded and monitored.
 
-See the [fleet overview](https://github.com/SuperInstance/codespace-edge-rd).
+See the [fleet overview](https://github.com/SuperInstance/fleet-status) (the Cocapn fleet's live status, registry, and architecture documentation).
 
 ## References
 
