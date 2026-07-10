@@ -32,7 +32,7 @@ Key research areas:
 
 | Question | Status | Notes |
 |----------|--------|-------|
-| Can agents operate fully in Codespaces? | ✅ Validated | Capitaine fleet uses this pattern |
+| Can agents operate fully in Codespaces? | ✅ Validated | [Lucineer/capitaine](https://github.com/Lucineer/capitaine) flagship runs this way — its tagline: "fork a repo, click Codespaces, the agent is alive" |
 | API for programmatic Codespace management? | ✅ Available | GitHub REST API `/codespaces` endpoints |
 | Background daemons (cron)? | ✅ Works | systemd timers, cron jobs |
 | Cost model? | Researched | Free tier: 120 core-hours/month. Pro: $0.09/core-hour |
