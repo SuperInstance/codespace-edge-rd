@@ -22,7 +22,7 @@ This matters because:
 GitHub Codespaces provide:
 
 - 2–32 core vCPUs
-- 4–64 GB RAM
+- 8–128 GB RAM
 - 32–128 GB storage
 - Linux environment with Docker support
 - Internet access (LLM APIs, GitHub API)
