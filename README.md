@@ -4,14 +4,14 @@
 
 ## Why It Matters
 
-The SuperInstance fleet operates on a **cloud-thinks, edge-acts** paradigm. Agents are born in GitHub Codespaces — cloud development environments with full compute, unlimited bandwidth, and access to LLM APIs. But production deployment often targets edge hardware: Jetson GPUs for inference, Raspberry Pis for IoT control, ESP8266s for sensor reading.
+The SuperInstance fleet operates on a **cloud-thinks, edge-acts** paradigm. Agents are born in GitHub Codespaces — cloud development environments with substantial compute, high bandwidth, and access to LLM APIs. But production deployment often targets edge hardware: Jetson GPUs for inference, Raspberry Pis for IoT control, ESP8266s for sensor reading.
 
 The challenge is **state continuity**: an agent that has been learning and adapting in the cloud for weeks must transfer its accumulated intelligence to a resource-constrained edge device without losing its training, skills, or personality. This is the "yoke transfer" problem.
 
 This matters because:
 
 - **Edge devices have constraints** — 80KB RAM (ESP8266), no GPU (Pi Zero), intermittent connectivity
-- **Cloud has unlimited resources** — but $0.09/hour Codespace costs add up, and latency to the edge matters
+- **Cloud resources are much larger, but not unlimited** — $0.09/hour Codespace costs add up, and latency to the edge matters
 - **The intelligence gap is real** — a cloud agent with GPT-4 access behaves fundamentally differently from the same agent on an ESP8266 with a lookup table
 - **Crystallization bridges the gap** — fluid intelligence (LLM calls) must be compiled to solid intelligence (code, lookup tables, compiled policies) before transfer
 
@@ -134,6 +134,11 @@ Codespace-edge-rd provides the **deployment research layer** for the fleet. With
 The conservation invariant is the agent's behavioral function: given the same inputs, the cloud agent and edge agent should produce equivalent outputs. The error introduced by crystallization (e.g., INT8 quantization, lookup table approximation) is the conservation violation — bounded and monitored.
 
 See the [fleet overview](https://github.com/SuperInstance/fleet-status) (the Cocapn fleet's live status, registry, and architecture documentation).
+
+## Related Repos
+- **[plato-edge](https://github.com/SuperInstance/plato-edge)** — a real edge-side tile/state protocol (beacon, deadband filtering, flywheel KV) implementing part of the "edge-acts" half of this repo's research question, as a running system rather than a research question.
+- **[nexus-edge-runtime](https://github.com/SuperInstance/nexus-edge-runtime)** — a substantial edge runtime (bytecode VM, safety validation, sensor fusion) that's a concrete example of the "solid intelligence" (compiled policies, not LLM calls) this repo's crystallization framing describes.
+- **[edge-relay-agent](https://github.com/SuperInstance/edge-relay-agent)** — a real Python agent bridging edge devices to the cloud fleet; a working instance of the cloud-edge telemetry bridge this repo's yoke-transfer research is reasoning about in the abstract.
 
 ## References
 
