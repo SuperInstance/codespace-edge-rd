@@ -1,2 +1,27 @@
+# Dependencies (if prototypes are added)
+node_modules/
+
+# Python (if ML prototypes are added)
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Rust
 target/
 Cargo.lock
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Build artifacts
+dist/
+build/

@@ -1,12 +1,59 @@
 name: CI
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
+
 jobs:
-  test:
+  validate-docs:
+    name: Validate Documentation Repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "No CI configured — customize per project requirements"
+
+      - name: Validate LICENSE
+        run: |
+          test -f LICENSE
+          grep -q 'MIT License' LICENSE
+          echo 'LICENSE: valid ✓'
+
+      - name: Validate README
+        run: |
+          test -f README.md
+          grep -q 'Codespace' README.md
+          grep -q 'Edge' README.md
+          grep -q 'yoke' README.md
+          grep -q 'crystallization' README.md
+          grep -q 'Quick Start' README.md
+          echo 'README: valid ✓'
+
+      - name: Validate CHARTER
+        run: |
+          test -f CHARTER.md
+          grep -q 'Mission' CHARTER.md
+          echo 'CHARTER: valid ✓'
+
+      - name: Validate docs directory
+        run: |
+          test -d docs
+          test $(find docs -name '*.md' | wc -l) -ge 2
+          echo 'docs/: valid ✓'
+
+      - name: Validate .gitignore
+        run: |
+          test -f .gitignore
+          grep -qE 'target/|__pycache__|node_modules' .gitignore
+          echo '.gitignore: valid ✓'
+
+  python-tests:
+    name: Documentation Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pytest
+      - run: python3 -m pytest tests/test_docs.py -v
