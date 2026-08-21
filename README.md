@@ -32,9 +32,70 @@ gh codespace create   # Uses devcontainer.json → agent is alive
 
 ## What It Does
 
-The SuperInstance fleet operates on a **cloud-thinks, edge-acts** paradigm. Agents are born in GitHub Codespaces — cloud development environments with full compute, unlimited bandwidth, and access to LLM APIs. But production deployment often targets edge hardware: Jetson GPUs for inference, Raspberry Pis for IoT control, ESP8266s for sensor reading.
+The SuperInstance fleet operates on a **cloud-thinks, edge-acts** paradigm. Agents are born in GitHub Codespaces — cloud development environments with substantial compute, high bandwidth, and access to LLM APIs. But production deployment often targets edge hardware: Jetson GPUs for inference, Raspberry Pis for IoT control, ESP8266s for sensor reading.
 
 The challenge is **state continuity**: an agent that has been learning and adapting in the cloud for weeks must transfer its accumulated intelligence to a resource-constrained edge device without losing its training, skills, or personality. This is the "yoke transfer" problem. This repo investigates how git-native agents can train in GitHub Codespaces (cloud) and deploy to edge hardware while maintaining complete state continuity.
+
+This matters because:
+
+- **Edge devices have constraints** — 80KB RAM (ESP8266), no GPU (Pi Zero), intermittent connectivity
+- **Cloud resources are much larger, but not unlimited** — $0.09/hour Codespace costs add up, and latency to the edge matters
+- **The intelligence gap is real** — a cloud agent with GPT-4 access behaves fundamentally differently from the same agent on an ESP8266 with a lookup table
+- **Crystallization bridges the gap** — fluid intelligence (LLM calls) must be compiled to solid intelligence (code, lookup tables, compiled policies) before transfer
+
+## How It Works
+
+### Research Question 1: Codespace as Agent Habitat
+
+GitHub Codespaces provide:
+
+- 2–32 core vCPUs
+- 8–128 GB RAM
+- 32–128 GB storage
+- Linux environment with Docker support
+- Internet access (LLM APIs, GitHub API)
+- Auto-suspend after 30 minutes idle (configurable)
+
+Key research areas:
+
+| Question | Status | Notes |
+|----------|--------|-------|
+| Can agents operate fully in Codespaces? | ✅ Validated | [Lucineer/capitaine](https://github.com/Lucineer/capitaine) flagship runs this way — its tagline: "fork a repo, click Codespaces, the agent is alive" |
+| API for programmatic Codespace management? | ✅ Available | GitHub REST API `/codespaces` endpoints |
+| Background daemons (cron)? | ✅ Works | systemd timers, cron jobs |
+| Cost model? | Researched | Free tier: 120 core-hours/month. Pro: $0.09/core-hour |
+| Multiple agents per Codespace? | ✅ Possible | tmux sessions, separate working directories |
+
+### Research Question 2: Yoke-Out Protocol (Cloud → Edge)
+
+State that needs serialization beyond git repos:
+
+| State Type | Serialization | Transfer Method |
+|-----------|--------------|-----------------|
+| Git repos | `git bundle` | Delta transfer (only changed commits) |
+| Environment variables | `.env` file (encrypted) | `age` encryption |
+| Running processes | Checkpoint/restore (CRIU) | Docker checkpoint |
+| Memory state | Serialize to JSON/Cap'n Proto | Compressed transfer |
+| Skill registry | JSONL packs | Already git-native |
+| Model weights | Safetensors | Quantized + sharded |
+
+The **bandwidth budget** for edge targets is tight:
+
+| Target | Connection | Bandwidth | Realistic Transfer Time (10MB) |
+|--------|-----------|-----------|-------------------------------|
+| Jetson on WiFi | 802.11ac | 200 Mbps | < 1 second |
+| Pi on cellular | 4G LTE | 10 Mbps | ~8 seconds |
+| ESP8266 on WiFi | 802.11n | 1 Mbps | ~80 seconds |
+| LoRaWAN | Long range | 0.01 Mbps | ~2.3 hours |
+
+### Research Question 3: Devcontainer Templates
+
+Standardized `devcontainer.json` configurations for agent development:
+
+- **Base** — Python 3.12 + Rust + Node + common tools
+- **ML** — Base + CUDA + PyTorch + Jupyter
+- **Edge** — Base + cross-compilation toolchains (ARM, Xtensa)
+- **Fleet** — Base + OpenClaw + gh CLI + fleet management tools
 
 ### Crystallization Mathematics
 
@@ -100,6 +161,13 @@ Not applicable — this is a research and documentation repository.
 - **Fleet** — Base + OpenClaw + gh CLI + fleet management tools
 
 ---
+
+See the [fleet overview](https://github.com/SuperInstance/fleet-status) (the Cocapn fleet's live status, registry, and architecture documentation).
+
+## Related Repos
+- **[plato-edge](https://github.com/SuperInstance/plato-edge)** — a real edge-side tile/state protocol (beacon, deadband filtering, flywheel KV) implementing part of the "edge-acts" half of this repo's research question, as a running system rather than a research question.
+- **[nexus-edge-runtime](https://github.com/SuperInstance/nexus-edge-runtime)** — a substantial edge runtime (bytecode VM, safety validation, sensor fusion) that's a concrete example of the "solid intelligence" (compiled policies, not LLM calls) this repo's crystallization framing describes.
+- **[edge-relay-agent](https://github.com/SuperInstance/edge-relay-agent)** — a real Python agent bridging edge devices to the cloud fleet; a working instance of the cloud-edge telemetry bridge this repo's yoke-transfer research is reasoning about in the abstract.
 
 ## Testing
 
